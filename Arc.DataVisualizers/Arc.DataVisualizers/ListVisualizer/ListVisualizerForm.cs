@@ -34,17 +34,18 @@ namespace Arc.DataVisualizers
             try
             {
                 var rootObj = (JArray)VisualizingSource;
-                foreach (var child in rootObj.Children())
+                foreach (var listItem in rootObj.Children())
                 {
-                    var childValue = (JArray)child;
-                    foreach (var child1 in child.Children())
+                    //var type = listItem.Value<JToken>().Type;
+                    foreach (var prop in listItem.Children())
                     {
+                        if (prop.Type == JTokenType.Object)
+                        {
+                            MessageBox.Show(prop.ToString() + " is object");
+                        }
                     }
                 }
-
                 gridData.DataSource = rootObj;
-
-
             }
             catch (Exception ex)
             {
@@ -55,6 +56,15 @@ namespace Arc.DataVisualizers
         private void btnClose_Click(object sender, EventArgs e)
         {
             this.Close();
+        }
+    }
+
+    public class JsonData
+    {
+        string BaseJsonString = string.Empty;
+        public JsonData(string JsonString)
+        {
+            this.BaseJsonString = JsonString;
         }
     }
 }
