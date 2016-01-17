@@ -48,7 +48,6 @@ namespace Arc.DataVisualizers
                 JsonSerializer ser = new JsonSerializer();
                 var sourceObject = ser.Deserialize<dynamic>(jsonReader);
 
-
                 //var sourceObject = objectProvider.GetObject();
                 //MessageBox.Show(sourceObject.ToString());
                 using (Form frm = new ListVisualizerForm(sourceObject))

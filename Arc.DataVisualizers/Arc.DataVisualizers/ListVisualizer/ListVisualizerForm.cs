@@ -1,13 +1,5 @@
 ﻿using Newtonsoft.Json.Linq;
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Arc.DataVisualizers
@@ -28,24 +20,31 @@ namespace Arc.DataVisualizers
                 MessageBox.Show(ex.GetBaseException().Message);
             }
         }
+        private void btnClose_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
 
         private void ListVisualizerForm_Load(object sender, EventArgs e)
         {
             try
             {
                 var rootObj = (JArray)VisualizingSource;
-                foreach (var listItem in rootObj.Children())
+
+                var test = new JsonData(rootObj.ToString());
+
+                if (test.IsArray)
                 {
-                    //var type = listItem.Value<JToken>().Type;
-                    foreach (var prop in listItem.Children())
+                    foreach (var item in test.Objects)
                     {
-                        if (prop.Type == JTokenType.Object)
+                        foreach (var pair in item.Pairs)
                         {
-                            MessageBox.Show(prop.ToString() + " is object");
+
                         }
                     }
                 }
-                gridData.DataSource = rootObj;
+
+                //gridData.DataSource = rootObj;
             }
             catch (Exception ex)
             {
@@ -53,18 +52,5 @@ namespace Arc.DataVisualizers
             }
         }
 
-        private void btnClose_Click(object sender, EventArgs e)
-        {
-            this.Close();
-        }
-    }
-
-    public class JsonData
-    {
-        string BaseJsonString = string.Empty;
-        public JsonData(string JsonString)
-        {
-            this.BaseJsonString = JsonString;
-        }
     }
 }
