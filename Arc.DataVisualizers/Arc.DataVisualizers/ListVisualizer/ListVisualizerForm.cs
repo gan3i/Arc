@@ -31,20 +31,33 @@ namespace Arc.DataVisualizers
             {
                 var rootObj = (JArray)VisualizingSource;
 
-                var test = new JsonData(rootObj.ToString());
+                JObject obj = JObject.Parse(rootObj[0].ToString());
 
-                if (test.IsArray)
+                foreach (var child in rootObj.Children())
                 {
-                    foreach (var item in test.Objects)
+                    var type = child.Type;
+                    foreach (var child1 in child.Children())
                     {
-                        foreach (var pair in item.Pairs)
-                        {
-
-                        }
+                        type = child1.Type;
                     }
+
                 }
 
-                //gridData.DataSource = rootObj;
+
+                //var test = new JsonData(rootObj.ToString());
+                //if (test.IsArray)
+                //{
+                //    foreach (var item in test.Objects)
+                //    {
+                //        foreach (var pair in item.Pairs)
+                //        {
+
+                //        }
+                //    }
+                //}
+
+                gridData.DataSource = rootObj;
+                gridData.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.DisplayedCells;
             }
             catch (Exception ex)
             {

@@ -17,15 +17,19 @@ namespace VisualizerTest
                 new Department {DepartmentId=3,DName="Java" }
             });
 
-            List<Employee> test = new List<Employee>(new[] {
+            List<Employee> empList = new List<Employee>(new[] {
                 new Employee { Name= "First", Salary=2000,DepartmentId=1,Dept = deptList.FirstOrDefault(d=>d.DepartmentId == 1)},
                 new Employee {  Name="Second",Salary= 1000,DepartmentId=2,Dept = deptList.FirstOrDefault(d=>d.DepartmentId == 2)},
                 new Employee { Name= "Third",Salary=1000,DepartmentId=3,Dept = deptList.FirstOrDefault(d=>d.DepartmentId == 3)},
+                new Employee { Name= "Fourth",Salary=4000,DepartmentId=3,Dept = deptList.FirstOrDefault(d=>d.DepartmentId == 3)},
             });
 
+            //foreach (var dept in deptList)
+            //{
+            //    dept.Employees = empList.Where(e => e.DepartmentId == dept.DepartmentId).ToList();
+            //}
 
-
-            ListVisualizer.TestShowVisualizer(test);
+            ListVisualizer.TestShowVisualizer(empList);
 
             //Console.ReadLine();
         }
@@ -40,8 +44,13 @@ namespace VisualizerTest
 
         public class Department
         {
+            public Department()
+            {
+                Employees = new List<Employee>();
+            }
             public int DepartmentId { get; set; }
             public string DName { get; set; }
+            public IEnumerable<Employee> Employees { get; set; }
         }
     }
 }

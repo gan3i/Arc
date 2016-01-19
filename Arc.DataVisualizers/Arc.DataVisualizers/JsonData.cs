@@ -34,8 +34,8 @@ namespace Arc.DataVisualizers
             {
                 foreach (var item in this.JsonObject)
                 {
-
                 }
+                    return null;
             }
         }
 
@@ -49,6 +49,22 @@ namespace Arc.DataVisualizers
             foreach (var token in JsonObject.Children().Where(t => t.Type == type))
             {
                 yield return new JsonData(token.ToString());
+            }
+        }
+    }
+    public class JsonValue
+    {
+        public string Key { get; set; }
+        public object Value { get; set; }
+        public JsonValue(string JsonString)
+        {
+            var data = JToken.Parse(JsonString);
+            foreach (var child in data.Children())
+            {
+                if (child.Type == JTokenType.Object)
+                {
+
+                }
             }
         }
     }

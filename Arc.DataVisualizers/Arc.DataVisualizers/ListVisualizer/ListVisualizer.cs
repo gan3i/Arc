@@ -17,24 +17,32 @@ namespace Arc.DataVisualizers
     {
         public override void GetData(object target, Stream outgoingData)
         {
-            ////using (var writer = new StreamWriter(outgoingData))
-            //{
-            //    var bin = new BinaryFormatter();
-            //    bin.Serialize(outgoingData, target);
-            //}
+            try
+            {
+                ////using (var writer = new StreamWriter(outgoingData))
+                //{
+                //    var bin = new BinaryFormatter();
+                //    bin.Serialize(outgoingData, target);
+                //}
 
-            StreamWriter writer = new StreamWriter(outgoingData);
-            JsonTextWriter jsonWriter = new JsonTextWriter(writer);
-            JsonSerializer ser = new JsonSerializer();
-            ser.Serialize(jsonWriter, target);
-            jsonWriter.Flush();
+                StreamWriter writer = new StreamWriter(outgoingData);
+                JsonTextWriter jsonWriter = new JsonTextWriter(writer);
+                JsonSerializer ser = JsonSerializer.Create(new JsonSerializerSettings { PreserveReferencesHandling = PreserveReferencesHandling.Objects });
+                ser.Serialize(jsonWriter, target);
+                jsonWriter.Flush();
 
-            //var serializer = new XmlSerializer(target.GetType());
-            //serializer.Serialize(outgoingData, target);
+                //var serializer = new XmlSerializer(target.GetType());
+                //serializer.Serialize(outgoingData, target);
 
-            //var writer = new StreamWriter(outgoingData);
-            //writer.WriteLine(target);
-            //writer.Flush();
+                //var writer = new StreamWriter(outgoingData);
+                //writer.WriteLine(target);
+                //writer.Flush();
+            }
+            catch (Exception ex)
+            {
+
+                throw;
+            }
         }
     }
     public class ListVisualizer : DialogDebuggerVisualizer
@@ -52,6 +60,7 @@ namespace Arc.DataVisualizers
                 //MessageBox.Show(sourceObject.ToString());
                 using (Form frm = new ListVisualizerForm(sourceObject))
                 {
+                    frm.WindowState =  FormWindowState.Maximized;
                     windowService.ShowDialog(frm);
                 }
             }
