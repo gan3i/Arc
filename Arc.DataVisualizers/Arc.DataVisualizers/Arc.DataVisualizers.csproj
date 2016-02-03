@@ -47,7 +47,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="JsonData.cs" />
     <Compile Include="ListVisualizer\ListVisualizer.cs" />
     <Compile Include="ListVisualizer\ListVisualizerForm.cs">
       <SubType>Form</SubType>
