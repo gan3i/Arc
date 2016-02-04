@@ -39,10 +39,7 @@ namespace Arc.DataVisualizers
                 //writer.Flush();
             }
             catch (Exception ex)
-            {
-
-                throw;
-            }
+            { throw; }
         }
     }
     public class ListVisualizer : DialogDebuggerVisualizer
@@ -60,7 +57,7 @@ namespace Arc.DataVisualizers
                 //MessageBox.Show(sourceObject.ToString());
                 using (Form frm = new ListVisualizerForm(sourceObject))
                 {
-                    frm.WindowState =  FormWindowState.Maximized;
+                    frm.WindowState = FormWindowState.Maximized;
                     windowService.ShowDialog(frm);
                 }
             }

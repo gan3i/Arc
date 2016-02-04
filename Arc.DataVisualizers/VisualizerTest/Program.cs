@@ -24,12 +24,12 @@ namespace VisualizerTest
                 new Employee { Name= "Fourth",Salary=4000,DepartmentId=3,Dept = deptList.FirstOrDefault(d=>d.DepartmentId == 3)},
             });
 
-            //foreach (var dept in deptList)
-            //{
-            //    dept.Employees = empList.Where(e => e.DepartmentId == dept.DepartmentId).ToList();
-            //}
+            foreach (var dept in deptList)
+            {
+                dept.Employees = empList.Where(e => e.DepartmentId == dept.DepartmentId).ToList();
+            }
 
-            ListVisualizer.TestShowVisualizer(empList);
+            ListVisualizer.TestShowVisualizer(empList.First());
 
             //Console.ReadLine();
         }

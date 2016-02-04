@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
@@ -15,12 +16,17 @@ namespace Arc.DataVisualizers
             {
                 InitializeComponent();
                 this.VisualizingSource = VisualizingSource;
+                gridData.AllowUserToAddRows = false;
+
+                gridData.RowPostPaint += GridData_RowPostPaint;
+                gridData.CellFormatting += GridData_CellFormatting;
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.GetBaseException().Message);
             }
         }
+
         private void btnClose_Click(object sender, EventArgs e)
         {
             this.Close();
@@ -30,32 +36,11 @@ namespace Arc.DataVisualizers
         {
             try
             {
-                var rootObj = (JArray)VisualizingSource;
-
-                //JObject obj = JObject.Parse(rootObj[0].ToString());
-
-                //foreach (var child in rootObj.Children())
-                //{
-                //    var type = child.Type;
-                //    foreach (var child1 in child.Children())
-                //    {
-                //        type = child1.Type;
-                //    }
-
-                //}
-
-
-                //var test = new JsonData(rootObj.ToString());
-                //if (test.IsArray)
-                //{
-                //    foreach (var item in test.Objects)
-                //    {
-                //        foreach (var pair in item.Pairs)
-                //        {
-
-                //        }
-                //    }
-                //}
+                JToken rootObj = (JObject)VisualizingSource;
+                if (rootObj.Type == JTokenType.Object)
+                {
+                    rootObj = new JArray(rootObj);
+                }
 
                 gridData.DataSource = rootObj;
                 gridData.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.DisplayedCells;
@@ -66,46 +51,30 @@ namespace Arc.DataVisualizers
             }
         }
 
-        public JsonValues ParseJsonArray(JToken RootJson)
+        private void GridData_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
         {
-            var rootType = RootJson.Type;
-            var jsonValue = new JsonValues();
-            switch (rootType)
+            var grid = sender as DataGridView;
+            var cellValue = grid.Rows[e.RowIndex].Cells[e.ColumnIndex].Value.ToString();
+            JObject jsonResult = null;
+            try
             {
-                case JTokenType.Object:
-
-                    break;
-                case JTokenType.Property:
-                    var jproperty = (JProperty)RootJson;
-                    jsonValue.Key = jproperty.Name;
-                    jsonValue.IsJsonValue = (jproperty.Value.Type == JTokenType.String);
-                    jsonValue.Value = jproperty.Value.ToString();
-                    break;
-                default:
-                    //return null;
-                    break;
+                jsonResult = JObject.Parse(cellValue);
             }
-            return null;
+            catch (JsonReaderException ex) { }
+
+            if (jsonResult != null)
+            {
+
+            }
         }
 
-    }
-
-    public class JsonValues
-    {
-        public string Key { get; set; }
-        public string Value { get; set; }
-        public bool IsJsonValue { get; set; }
-    }
-
-    class JsonValuesCollection
-    {
-        List<JToken> _list = new List<JToken>();
-        public JToken this[int index]
+        private void GridData_RowPostPaint(object sender, DataGridViewRowPostPaintEventArgs e)
         {
-            get { return _list[index]; }
-            set { _list[index] = value; }
+            var grid = sender as DataGridView;
+            var value = (string)grid.Rows[e.RowIndex].DataBoundItem;
+            DataGridViewCellStyle style = grid.Rows[e.RowIndex].DefaultCellStyle;
+            // Do whatever you want with style and value
+
         }
     }
-
-
 }
