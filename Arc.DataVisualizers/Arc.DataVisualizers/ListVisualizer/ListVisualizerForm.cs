@@ -10,7 +10,10 @@ namespace Arc.DataVisualizers
     public partial class ListVisualizerForm : Form
     {
         #region Variables & Properties
-        object VisualizingSource = null;
+
+
+
+        public JToken VisualizingSource { get; private set; }
         #endregion
 
         #region Constructor
@@ -19,10 +22,9 @@ namespace Arc.DataVisualizers
             try
             {
                 InitializeComponent();
-                this.VisualizingSource = VisualizingSource;
+                this.VisualizingSource = (JToken)VisualizingSource;
 
                 gridData.AllowUserToAddRows = false;
-                //gridData.CellFormatting += GridData_CellFormatting;
                 gridData.CellClick += GridData_CellClick;
                 gridData.DataBindingComplete += GridData_DataBindingComplete;
             }
@@ -40,6 +42,7 @@ namespace Arc.DataVisualizers
             try
             {
                 var grid = sender as DataGridView;
+
                 foreach (DataGridViewRow row in grid.Rows)
                 {
                     foreach (DataGridViewColumn column in grid.Columns)
@@ -50,19 +53,15 @@ namespace Arc.DataVisualizers
                         JToken jsonResult = null;
                         try
                         {
-                            jsonResult = JObject.Parse(cellValue);
+                            jsonResult = JToken.Parse(cellValue);
                         }
                         catch (JsonReaderException ex) { }
 
-                        if (jsonResult != null)
+                        if (jsonResult != null && (jsonResult is JObject || jsonResult is JArray))
                         {
                             var linkCell = new DataGridViewLinkCell();
-                            linkCell.UseColumnTextForLinkValue = false;
-                            linkCell.Tag = row.Cells[column.Index].Value;
-                            linkCell.Value = "Click";
-                            linkCell.LinkBehavior = LinkBehavior.AlwaysUnderline;
+                            linkCell.Tag = jsonResult;
                             row.Cells[column.Index] = linkCell;
-                            grid[column.Index, row.Index].Value = "Hide";
                         }
                     }
                 }
@@ -79,11 +78,14 @@ namespace Arc.DataVisualizers
             var cell = grid.Rows[e.RowIndex].Cells[e.ColumnIndex];
             if (cell is DataGridViewLinkCell)
             {
-                var cellValue = cell?.Tag?.ToString();
-                MessageBox.Show(cellValue);
+                var cellValue = cell?.Tag as JToken;
+                if (cellValue != null)
+                {
+                    //MessageBox.Show(cellValue.ToString());
+                    ListVisualizerForm frm = new ListVisualizerForm(cellValue);
+                    frm.ShowDialog(this);
+                }
             }
-
-            //throw new NotImplementedException();
         }
         #endregion
 
@@ -92,7 +94,7 @@ namespace Arc.DataVisualizers
         {
             try
             {
-                JToken rootObj = (JToken)VisualizingSource;
+                JToken rootObj = VisualizingSource;
                 if (rootObj.Type == JTokenType.Object)
                 {
                     rootObj = new JArray(rootObj);

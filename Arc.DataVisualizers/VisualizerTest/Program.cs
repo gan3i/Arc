@@ -1,9 +1,6 @@
 ﻿using Arc.DataVisualizers;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace VisualizerTest
 {
@@ -19,7 +16,7 @@ namespace VisualizerTest
 
             List<Employee> empList = new List<Employee>(new[] {
                 new Employee { Name= "First", Salary=2000,DepartmentId=1,Dept = deptList.FirstOrDefault(d=>d.DepartmentId == 1)},
-                new Employee {  Name="Second",Salary=1000,DepartmentId=2,Dept = deptList.FirstOrDefault(d=>d.DepartmentId == 2)},
+                new Employee { Name="Second",Salary=1000,DepartmentId=2,Dept = deptList.FirstOrDefault(d=>d.DepartmentId == 2)},
                 new Employee { Name= "Third",Salary=1000,DepartmentId=3,Dept = deptList.FirstOrDefault(d=>d.DepartmentId == 3)},
                 new Employee { Name= "Fourth",Salary=4000,DepartmentId=3,Dept = deptList.FirstOrDefault(d=>d.DepartmentId == 3)},
             });

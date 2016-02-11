@@ -2,9 +2,7 @@
 using Newtonsoft.Json;
 using System;
 using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
 using System.Windows.Forms;
-using System.Xml.Serialization;
 
 [assembly: System.Diagnostics.DebuggerVisualizer(
 typeof(Arc.DataVisualizers.ListVisualizer),
