@@ -12,6 +12,8 @@ namespace Arc.DataVisualizers
         #region Variables & Properties
         public JToken VisualizingSource { get; private set; }
         private const string IDCOLUMNNAME = "$id";
+        private const string REFCOLUMNNAME = "$ref";
+
         Dictionary<int, JToken> JReferences { get; set; } = new Dictionary<int, JToken>();
         #endregion
 
@@ -21,6 +23,9 @@ namespace Arc.DataVisualizers
             try
             {
                 InitializeComponent();
+                this.WindowState = FormWindowState.Maximized;
+                this.ShowInTaskbar = false;
+
                 this.VisualizingSource = (JToken)VisualizingSource;
 
                 gridData.AllowUserToAddRows = false;
@@ -37,6 +42,55 @@ namespace Arc.DataVisualizers
         private ListVisualizerForm(object VisualizingSource, Dictionary<int, JToken> ReferencesList) : this(VisualizingSource)
         {
             JReferences = ReferencesList;
+        }
+        #endregion
+
+        #region Form Events
+        private void ListVisualizerForm_Load(object sender, EventArgs e)
+        {
+            try
+            {
+                JToken rootObj = VisualizingSource;
+                if (rootObj.Type == JTokenType.Object)
+                {
+                    rootObj = new JArray(rootObj);
+                }
+
+                var children = rootObj.Children().ToList();
+                foreach (var item in children)
+                {
+                    var firstProperty = item.First;
+                    if (firstProperty != null && firstProperty is JProperty)
+                    {
+                        var firstJProperty = (JProperty)firstProperty;
+                        if (firstJProperty.Name == IDCOLUMNNAME)
+                        {
+                            int objId = Convert.ToInt32(firstJProperty.Value.ToString());
+                            if (JReferences.ContainsKey(objId))
+                                JReferences[objId] = item;
+                            else
+                                JReferences.Add(objId, item);
+                        }
+                        else if (firstJProperty.Name == REFCOLUMNNAME)
+                        {
+                            int refId = Convert.ToInt32(firstJProperty.Value.ToString());
+                            if (JReferences.ContainsKey(refId))
+                            {
+                                var refJson = JReferences[refId];
+                                item.AddBeforeSelf(refJson);
+                                item.Remove();
+                            }
+                        }
+                    }
+                }
+
+                gridData.DataSource = rootObj;
+                gridData.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.DisplayedCells;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.GetBaseException().Message);
+            }
         }
         #endregion
 
@@ -95,59 +149,6 @@ namespace Arc.DataVisualizers
                     ListVisualizerForm frm = new ListVisualizerForm(cellValue, JReferences);
                     frm.ShowDialog(this);
                 }
-            }
-        }
-        #endregion
-
-        #region Form Events
-        private void ListVisualizerForm_Load(object sender, EventArgs e)
-        {
-            try
-            {
-                JToken rootObj = VisualizingSource;
-                if (rootObj.Type == JTokenType.Object)
-                {
-                    rootObj = new JArray(rootObj);
-                }
-
-                var children = rootObj.Children().ToList();
-                foreach (var item in children)
-                {
-                    var firstProperty = item.First;
-                    if (firstProperty != null && firstProperty is JProperty)
-                    {
-
-                        var firstJProperty = (JProperty)firstProperty;
-                        if (firstJProperty.Name == IDCOLUMNNAME)
-                        {
-                            int objId = Convert.ToInt32(firstJProperty.Value.ToString());
-                            if (JReferences.ContainsKey(objId))
-                                JReferences[objId] = item;
-                            else
-                                JReferences.Add(objId, item);
-                        }
-                        else if (firstJProperty.Name == "$ref")
-                        {
-                            int refId = Convert.ToInt32(firstJProperty.Value.ToString());
-                            if (JReferences.ContainsKey(refId))
-                            {
-                                var refJson = JReferences[refId];
-                                item.AddBeforeSelf(refJson);
-                                item.Remove();
-                            }
-                            else
-                            { //Not found in references
-                            }
-                        }
-                    }
-                }
-
-                gridData.DataSource = rootObj;
-                gridData.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.DisplayedCells;
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.GetBaseException().Message);
             }
         }
         #endregion
