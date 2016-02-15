@@ -2,7 +2,7 @@
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
+using System.Linq;
 using System.Windows.Forms;
 
 namespace Arc.DataVisualizers
@@ -10,10 +10,9 @@ namespace Arc.DataVisualizers
     public partial class ListVisualizerForm : Form
     {
         #region Variables & Properties
-
-
-
         public JToken VisualizingSource { get; private set; }
+        private const string IDCOLUMNNAME = "$id";
+        Dictionary<int, JToken> JReferences { get; set; } = new Dictionary<int, JToken>();
         #endregion
 
         #region Constructor
@@ -25,6 +24,7 @@ namespace Arc.DataVisualizers
                 this.VisualizingSource = (JToken)VisualizingSource;
 
                 gridData.AllowUserToAddRows = false;
+                gridData.EditMode = DataGridViewEditMode.EditProgrammatically;
                 gridData.CellClick += GridData_CellClick;
                 gridData.DataBindingComplete += GridData_DataBindingComplete;
             }
@@ -34,6 +34,10 @@ namespace Arc.DataVisualizers
             }
         }
 
+        private ListVisualizerForm(object VisualizingSource, Dictionary<int, JToken> ReferencesList) : this(VisualizingSource)
+        {
+            JReferences = ReferencesList;
+        }
         #endregion
 
         #region Grid Events
@@ -50,6 +54,12 @@ namespace Arc.DataVisualizers
                         var cellValue = row.Cells[column.Index]?.Value?.ToString();
                         if (cellValue == null)
                             return;
+
+                        if (column.Name == IDCOLUMNNAME)
+                        {
+
+                        }
+
                         JToken jsonResult = null;
                         try
                         {
@@ -82,7 +92,7 @@ namespace Arc.DataVisualizers
                 if (cellValue != null)
                 {
                     //MessageBox.Show(cellValue.ToString());
-                    ListVisualizerForm frm = new ListVisualizerForm(cellValue);
+                    ListVisualizerForm frm = new ListVisualizerForm(cellValue, JReferences);
                     frm.ShowDialog(this);
                 }
             }
@@ -98,6 +108,38 @@ namespace Arc.DataVisualizers
                 if (rootObj.Type == JTokenType.Object)
                 {
                     rootObj = new JArray(rootObj);
+                }
+
+                var children = rootObj.Children().ToList();
+                foreach (var item in children)
+                {
+                    var firstProperty = item.First;
+                    if (firstProperty != null && firstProperty is JProperty)
+                    {
+
+                        var firstJProperty = (JProperty)firstProperty;
+                        if (firstJProperty.Name == IDCOLUMNNAME)
+                        {
+                            int objId = Convert.ToInt32(firstJProperty.Value.ToString());
+                            if (JReferences.ContainsKey(objId))
+                                JReferences[objId] = item;
+                            else
+                                JReferences.Add(objId, item);
+                        }
+                        else if (firstJProperty.Name == "$ref")
+                        {
+                            int refId = Convert.ToInt32(firstJProperty.Value.ToString());
+                            if (JReferences.ContainsKey(refId))
+                            {
+                                var refJson = JReferences[refId];
+                                item.AddBeforeSelf(refJson);
+                                item.Remove();
+                            }
+                            else
+                            { //Not found in references
+                            }
+                        }
+                    }
                 }
 
                 gridData.DataSource = rootObj;
