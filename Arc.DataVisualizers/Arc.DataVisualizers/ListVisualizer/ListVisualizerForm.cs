@@ -111,7 +111,7 @@ namespace Arc.DataVisualizers
 
                         if (column.Name == IDCOLUMNNAME)
                         {
-
+                            column.Visible = false;
                         }
 
                         JToken jsonResult = null;
@@ -145,7 +145,6 @@ namespace Arc.DataVisualizers
                 var cellValue = cell?.Tag as JToken;
                 if (cellValue != null)
                 {
-                    //MessageBox.Show(cellValue.ToString());
                     ListVisualizerForm frm = new ListVisualizerForm(cellValue, JReferences);
                     frm.ShowDialog(this);
                 }
