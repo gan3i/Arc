@@ -55,7 +55,7 @@ namespace Arc.DataVisualizers
                 //MessageBox.Show(sourceObject.ToString());
                 using (Form frm = new ListVisualizerForm(sourceObject))
                 {
-                    frm.WindowState = FormWindowState.Maximized;
+                    frm.WindowState = FormWindowState.Normal;
                     windowService.ShowDialog(frm);
                 }
             }

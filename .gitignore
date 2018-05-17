@@ -1,0 +1,11 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/.vs
+/Arc.DataVisualizers/.vs
+/Arc.DataVisualizers/Arc.DataVisualizers/bin
+/Arc.DataVisualizers/Arc.DataVisualizers/obj
+/Arc.DataVisualizers/VisualizerTest/bin
+/Arc.DataVisualizers/VisualizerTest/obj
+/Arc.DataVisualizers/VisualizerTest/obj
